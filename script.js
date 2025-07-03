@@ -11,6 +11,7 @@ let dragOffsetX = 0;
 let dragOffsetY = 0;
 let originalParent = null;
 let originalNextSibling = null;
+let dragImageEl = null;
 
 // 🔑 Get group from URL query parameter (e.g. ?group=1)
 let currentSessionId = "live-room";
@@ -28,16 +29,32 @@ document.addEventListener("DOMContentLoaded", () => {
   function attachDragEvents(el) {
     el.setAttribute("draggable", "true");
 
-    el.addEventListener("dragstart", () => {
+    el.addEventListener("dragstart", e => {
       draggedElement = el;
       const parentBank = el.closest(".drag-items");
       draggedType = parentBank ? parentBank.dataset.type : el.closest(".drop-zone")?.dataset.type;
       el.classList.add("dragging");
       setTimeout(() => el.classList.add("hidden"), 0);
+
+      const rect = el.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+
+      dragImageEl = el.cloneNode(true);
+      dragImageEl.style.position = "absolute";
+      dragImageEl.style.top = "-9999px";
+      dragImageEl.style.left = "-9999px";
+      dragImageEl.style.pointerEvents = "none";
+      document.body.appendChild(dragImageEl);
+      e.dataTransfer.setDragImage(dragImageEl, dragOffsetX, dragOffsetY);
     });
 
     el.addEventListener("dragend", () => {
       if (draggedElement) draggedElement.classList.remove("hidden", "dragging");
+      if (dragImageEl && dragImageEl.parentNode) {
+        dragImageEl.parentNode.removeChild(dragImageEl);
+      }
+      dragImageEl = null;
       draggedElement = null;
       draggedType = null;
     });
