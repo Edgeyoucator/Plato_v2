@@ -7,6 +7,10 @@ const checks = [false, false, false, false, false, false];
 
 let draggedElement = null;
 let draggedType = null;
+let dragOffsetX = 0;
+let dragOffsetY = 0;
+let originalParent = null;
+let originalNextSibling = null;
 
 // 🔑 Get group from URL query parameter (e.g. ?group=1)
 let currentSessionId = "live-room";
@@ -37,65 +41,127 @@ document.addEventListener("DOMContentLoaded", () => {
       draggedElement = null;
       draggedType = null;
     });
+
+    // Pointer-based dragging for touch devices
+    el.addEventListener("pointerdown", e => {
+      if (e.pointerType !== "touch") return;
+      e.preventDefault();
+      draggedElement = el;
+      const parentBank = el.closest(".drag-items");
+      draggedType = parentBank ? parentBank.dataset.type : el.closest(".drop-zone")?.dataset.type;
+      originalParent = el.parentNode;
+      originalNextSibling = el.nextSibling;
+      const rect = el.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      el.classList.add("dragging");
+      el.setPointerCapture(e.pointerId);
+      el.style.position = "fixed";
+      el.style.zIndex = "1000";
+      el.style.left = `${e.clientX - dragOffsetX}px`;
+      el.style.top = `${e.clientY - dragOffsetY}px`;
+
+      document.addEventListener("pointermove", pointerMove);
+      document.addEventListener("pointerup", pointerUp);
+    });
   }
 
   document.querySelectorAll(".draggable").forEach(attachDragEvents);
 
+  function pointerMove(e) {
+    if (e.pointerType !== "touch" || !draggedElement) return;
+    e.preventDefault();
+    draggedElement.style.left = `${e.clientX - dragOffsetX}px`;
+    draggedElement.style.top = `${e.clientY - dragOffsetY}px`;
+  }
+
+  function pointerUp(e) {
+    if (e.pointerType !== "touch" || !draggedElement) return;
+    document.removeEventListener("pointermove", pointerMove);
+    document.removeEventListener("pointerup", pointerUp);
+
+    draggedElement.releasePointerCapture(e.pointerId);
+    draggedElement.style.position = "";
+    draggedElement.style.left = "";
+    draggedElement.style.top = "";
+    draggedElement.style.zIndex = "";
+    draggedElement.classList.remove("dragging");
+
+    const dropTarget = document.elementFromPoint(e.clientX, e.clientY);
+    const zone = dropTarget && dropTarget.closest(".drop-zone");
+    const bank = dropTarget && dropTarget.closest(".drag-items");
+
+    if (zone) {
+      performDropToZone(zone);
+    } else if (bank) {
+      performDropToBank(bank);
+    } else if (originalParent) {
+      originalParent.insertBefore(draggedElement, originalNextSibling);
+    }
+
+    draggedElement = null;
+    draggedType = null;
+  }
+
   dropZones.forEach(zone => {
     zone.addEventListener("dragover", e => e.preventDefault());
 
-    zone.addEventListener("drop", () => {
-      if (!draggedElement) return;
-
-      const slot = +zone.dataset.slot;
-      const zoneType = zone.dataset.type;
-
-      if (zoneType !== draggedType) return;
-      if (zone.classList.contains("locked")) return;
-
-      if (zone.firstChild) {
-        const existingItem = zone.firstChild;
-        const correctBank = document.querySelector(`.drag-items[data-type="${zoneType}"]`);
-        if (correctBank) correctBank.appendChild(existingItem);
-      }
-
-      ["image", "caption"].forEach(type => {
-        placements[type] = placements[type].map(id =>
-          id === draggedElement.dataset.id ? null : id
-        );
-      });
-
-      placements[zoneType][slot] = draggedElement.dataset.id;
-      zone.appendChild(draggedElement);
-      attachDragEvents(draggedElement);
-
-      checkFinalPassword();
-      saveUserAttempt();
-    });
+    zone.addEventListener("drop", () => performDropToZone(zone));
   });
 
   allBanks.forEach(bank => {
     bank.addEventListener("dragover", e => e.preventDefault());
 
-    bank.addEventListener("drop", () => {
-      if (!draggedElement) return;
-
-      const bankType = bank.dataset.type;
-      if (bankType !== draggedType) return;
-
-      ["image", "caption"].forEach(type => {
-        placements[type] = placements[type].map(id =>
-          id === draggedElement.dataset.id ? null : id
-        );
-      });
-
-      bank.appendChild(draggedElement);
-      attachDragEvents(draggedElement);
-
-      checkFinalPassword();
-      saveUserAttempt();
-    });
+    bank.addEventListener("drop", () => performDropToBank(bank));
   });
+
+  function performDropToZone(zone) {
+    if (!draggedElement) return;
+
+    const slot = +zone.dataset.slot;
+    const zoneType = zone.dataset.type;
+
+    if (zoneType !== draggedType) return;
+    if (zone.classList.contains("locked")) return;
+
+    if (zone.firstChild) {
+      const existingItem = zone.firstChild;
+      const correctBank = document.querySelector(`.drag-items[data-type="${zoneType}"]`);
+      if (correctBank) correctBank.appendChild(existingItem);
+    }
+
+    ["image", "caption"].forEach(type => {
+      placements[type] = placements[type].map(id =>
+        id === draggedElement.dataset.id ? null : id
+      );
+    });
+
+    placements[zoneType][slot] = draggedElement.dataset.id;
+    zone.appendChild(draggedElement);
+    attachDragEvents(draggedElement);
+
+    checkFinalPassword();
+    saveUserAttempt();
+  }
+
+  function performDropToBank(bank) {
+    if (!draggedElement) return;
+
+    const bankType = bank.dataset.type;
+    if (bankType !== draggedType) return;
+
+    ["image", "caption"].forEach(type => {
+      placements[type] = placements[type].map(id =>
+        id === draggedElement.dataset.id ? null : id
+      );
+    });
+
+    bank.appendChild(draggedElement);
+    attachDragEvents(draggedElement);
+
+    checkFinalPassword();
+    saveUserAttempt();
+  }
 
   const correctPairs = [
     { image: "E", caption: "3" },
