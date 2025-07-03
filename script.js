@@ -24,6 +24,10 @@ if (groupParam) {
 document.addEventListener("DOMContentLoaded", () => {
   const dropZones = document.querySelectorAll(".drop-zone");
   const allBanks = document.querySelectorAll(".drag-items");
+  const imageBankEl = document.querySelector(".drag-items.image-bank");
+  const captionBankEl = document.querySelector(".drag-items.caption-bank");
+  const allImageIds = Array.from(imageBankEl.children).map(el => el.dataset.id);
+  const allCaptionIds = Array.from(captionBankEl.children).map(el => el.dataset.id);
   const passwordField = document.getElementById("passwordField");
 
   function attachDragEvents(el) {
@@ -263,17 +267,40 @@ document.addEventListener("DOMContentLoaded", () => {
       const imagePlacements = data.images || {};
       const captionPlacements = data.captions || {};
       const checkStates = data.checks || [false, false, false, false, false, false];
+      const placedImageIds = new Set(Object.values(imagePlacements).filter(Boolean));
+      const placedCaptionIds = new Set(Object.values(captionPlacements).filter(Boolean));
+
+      [imageBankEl, captionBankEl].forEach(bank => {
+        while (bank.firstChild) bank.removeChild(bank.firstChild);
+      });
 
       document.querySelectorAll(".drop-zone").forEach(zone => {
         while (zone.firstChild) zone.removeChild(zone.firstChild);
+        zone.classList.remove("locked");
       });
 
       placements.image = [null, null, null, null, null, null];
       placements.caption = [null, null, null, null, null, null];
 
+      allImageIds.forEach(id => {
+        if (!placedImageIds.has(id)) {
+          const el = createDraggableElement(id, "image");
+          imageBankEl.appendChild(el);
+          attachDragEvents(el);
+        }
+      });
+
+      allCaptionIds.forEach(id => {
+        if (!placedCaptionIds.has(id)) {
+          const el = createDraggableElement(id, "caption");
+          captionBankEl.appendChild(el);
+          attachDragEvents(el);
+        }
+      });
+
       Object.entries(imagePlacements).forEach(([slot, id]) => {
         const dropZone = document.querySelector(`.image-row .drop-zone[data-slot="${slot}"]`);
-        if (dropZone) {
+        if (dropZone && id) {
           const el = createDraggableElement(id, "image");
           dropZone.appendChild(el);
           placements.image[slot] = id;
@@ -283,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       Object.entries(captionPlacements).forEach(([slot, id]) => {
         const dropZone = document.querySelector(`.caption-row .drop-zone[data-slot="${slot}"]`);
-        if (dropZone) {
+        if (dropZone && id) {
           const el = createDraggableElement(id, "caption");
           dropZone.appendChild(el);
           placements.caption[slot] = id;
