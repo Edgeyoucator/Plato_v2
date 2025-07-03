@@ -1,0 +1,274 @@
+@font-face {
+  font-family: 'LeBeauneNew';
+  src: url("https://db.onlinewebfonts.com/t/9f4965a37ac189de7844a4c13c7108f5.woff2") format("woff2"),
+       url("https://db.onlinewebfonts.com/t/9f4965a37ac189de7844a4c13c7108f5.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  padding: 2rem;
+  font-family: 'Times New Roman', serif;
+  color: white;
+  text-align: center;
+  position: relative;
+  min-height: 100vh;
+  background-image: url('images/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow-x: hidden; /* ✅ allow vertical scroll */
+  overflow-y: auto;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(22, 34, 55, 0.7);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+h1 {
+  font-family: 'LeBeauneNew', serif;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #f15f24;
+}
+
+.drop-grid {
+  display: grid;
+  grid-template-columns: auto repeat(6, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  align-items: center;
+}
+
+.row-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  text-align: center;
+  font-weight: bold;
+  color: #86dabd;
+}
+
+.row {
+  display: contents;
+}
+
+.drop-zone {
+  height: 140px;
+  width: 100%;
+  max-width: 130px;
+  margin: 0 auto;
+  border: 2px dashed #86dabd;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.drag-bank {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.drag-section {
+  flex: 1;
+  min-width: 400px;
+}
+
+.drag-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  min-height: 160px;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px dashed #86dabd;
+  border-radius: 10px;
+}
+
+.draggable {
+  background-color: #1f2e47;
+  border: 1px solid #86dabd;
+  border-radius: 10px;
+  cursor: grab;
+  color: white;
+  width: 120px;
+  height: 140px;
+  box-sizing: border-box;
+  padding: 0.25rem;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.draggable p {
+  margin: 0;
+  padding: 0.25rem;
+  text-align: center;
+  line-height: 1.2;
+  white-space: normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+
+  font-size: clamp(0.55rem, 0.9vw, 0.75rem);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.draggable img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.drop-zone .draggable {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.draggable.hidden {
+  display: none;
+}
+
+.centered-password {
+  margin-top: 3rem;
+  text-align: center;
+  background-color: rgba(255, 120, 10, 0.4);
+  padding: 1rem 2rem;
+  border-radius: 1rem;
+  display: inline-block;
+}
+
+.centered-password input {
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  width: 200px;
+  background-color: white;
+  color: #162237;
+}
+
+/* Caption hover zoom */
+.caption-bank {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.caption-bank .draggable {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease-in-out;
+}
+
+.caption-bank .draggable:not(.dragging):hover {
+  transform: scale(1.8);
+  z-index: 10;
+  background-color: #2a3b5c;
+  box-shadow: 0 0 10px #86dabd;
+}
+
+/* Image hover zoom */
+.image-bank {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+.image-bank .draggable {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.2s ease-in-out;
+}
+
+.image-bank .draggable:not(.dragging):hover {
+  transform: scale(1.8);
+  z-index: 10;
+  background-color: #2a3b5c;
+  box-shadow: 0 0 10px #86dabd;
+}
+
+/* Disable zoom while dragging */
+.caption-bank .draggable.dragging,
+.image-bank .draggable.dragging {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Check row */
+.check-row {
+  display: contents;
+}
+
+.check-cell {
+  text-align: center;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-btn {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  background-color: #162237;
+  color: #86dabd;
+  border: 1px solid #86dabd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.check-icon {
+  font-size: 1.2rem;
+}
+
+.check-icon.correct {
+  color: #4caf50;
+}
+
+.check-icon.incorrect {
+  color: #f44336;
+}
+
+.drop-zone.locked {
+  opacity: 0.85;
+  pointer-events: none;
+}

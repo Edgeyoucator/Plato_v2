@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Plato’s Cave Puzzle</title>
+  <link rel="stylesheet" href="style.css"/>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMt2zs9c6xJJ-7WUy0dOBdCCA-_X4iMH8",
+      authDomain: "plato-78aaa.firebaseapp.com",
+      databaseURL: "https://plato-78aaa-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "plato-78aaa",
+      storageBucket: "plato-78aaa.firebasestorage.app",
+      messagingSenderId: "390587610829",
+      appId: "1:390587610829:web:ad80a7aa9f42ea7c601b84",
+      measurementId: "G-EJMTLN2JF9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Plato’s Cave </h1>
+
+    <div class="drop-grid">
+      <!-- Image Row -->
+      <div class="row-label">IMAGE</div>
+      <div class="row image-row">
+        <div class="drop-zone" data-slot="0" data-type="image"></div>
+        <div class="drop-zone" data-slot="1" data-type="image"></div>
+        <div class="drop-zone" data-slot="2" data-type="image"></div>
+        <div class="drop-zone" data-slot="3" data-type="image"></div>
+        <div class="drop-zone" data-slot="4" data-type="image"></div>
+        <div class="drop-zone" data-slot="5" data-type="image"></div>
+      </div>
+
+      <!-- Caption Row -->
+      <div class="row-label">CAPTION</div>
+      <div class="row caption-row">
+        <div class="drop-zone" data-slot="0" data-type="caption"></div>
+        <div class="drop-zone" data-slot="1" data-type="caption"></div>
+        <div class="drop-zone" data-slot="2" data-type="caption"></div>
+        <div class="drop-zone" data-slot="3" data-type="caption"></div>
+        <div class="drop-zone" data-slot="4" data-type="caption"></div>
+        <div class="drop-zone" data-slot="5" data-type="caption"></div>
+      </div>
+
+      <!-- Check Row -->
+      <div class="row-label"></div>
+      <div class="row check-row">
+        <div class="check-cell" data-slot="0"><button class="check-btn">Check</button></div>
+        <div class="check-cell" data-slot="1"><button class="check-btn">Check</button></div>
+        <div class="check-cell" data-slot="2"><button class="check-btn">Check</button></div>
+        <div class="check-cell" data-slot="3"><button class="check-btn">Check</button></div>
+        <div class="check-cell" data-slot="4"><button class="check-btn">Check</button></div>
+        <div class="check-cell" data-slot="5"><button class="check-btn">Check</button></div>
+      </div>
+    </div>
+
+    <!-- Drag banks -->
+    <div class="drag-bank">
+      <div class="drag-section">
+        <h2>Images</h2>
+        <div class="drag-items image-bank" data-type="image">
+          <div class="draggable" draggable="true" data-id="A"><img src="images/A.jpg" /></div>
+          <div class="draggable" draggable="true" data-id="B"><img src="images/B.jpg" /></div>
+          <div class="draggable" draggable="true" data-id="C"><img src="images/C.jpg" /></div>
+          <div class="draggable" draggable="true" data-id="D"><img src="images/D.jpg" /></div>
+          <div class="draggable" draggable="true" data-id="E"><img src="images/E.jpg" /></div>
+          <div class="draggable" draggable="true" data-id="F"><img src="images/F.jpg" /></div>
+        </div>
+      </div>
+
+      <div class="drag-section">
+        <h2>Captions</h2>
+        <div class="drag-items caption-bank" data-type="caption">
+          <div class="draggable" draggable="true" data-id="1"><p>After seeing the jailers, Alf ventures further out of the cave and spots an enormous exit. Again he is blinded but gradually, he recognizes the sun shining from the sky.</p></div>
+          <div class="draggable" draggable="true" data-id="2"><p>One prisoner, Alf, manages to leave captivity, Alf is blinded by a brilliant light. It hurts his eyes. But after a while Alf's eyes start to adjust.</p></div>
+          <div class="draggable" draggable="true" data-id="3"><p>There are prisoners kept locked up in a big cave, staring at the face of a wall. They are never allowed to turn and see what is behind them.</p></div>
+          <div class="draggable" draggable="true" data-id="4"><p>After seeing more clearly, Alf climbs up a ledge from where he looks down to where he spent most of his life. He sees a fire blocking the path of the prisoners.</p></div>
+          <div class="draggable" draggable="true" data-id="5"><p>Alf is excited and wants to tell everyone about the sun. The prisoners get really angry. They start shouting at Alf. 'Just go away!' they yell and throw rocks at him.</p></div>
+          <div class="draggable" draggable="true" data-id="6"><p>He also sees the jailers walk along the path carrying objects, the objects they carry cast shadows down on to the wall in front of the prisoners.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Final password display -->
+    <div id="finalPassword" class="centered-password">
+      <p>🔐 Final password:</p>
+      <input type="text" id="passwordField" placeholder="??????" readonly />
+    </div>
+  </div>
+
+  <!-- Your main script logic -->
+  <script src="script.js"></script>
+</body>
+</html>
