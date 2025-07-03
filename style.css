@@ -87,6 +87,8 @@ h1 {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  /* Improve touch dragging on mobile */
+  touch-action: none;
 }
 
 .drag-bank {
@@ -112,6 +114,8 @@ h1 {
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px dashed #86dabd;
   border-radius: 10px;
+  /* Prevent scrolling when dragging over banks on touch devices */
+  touch-action: none;
 }
 
 .draggable {
@@ -119,6 +123,9 @@ h1 {
   border: 1px solid #86dabd;
   border-radius: 10px;
   cursor: grab;
+  /* Prevent scrolling and text selection during touch dragging */
+  touch-action: none;
+  user-select: none;
   color: white;
   width: 120px;
   height: 140px;
@@ -199,11 +206,13 @@ h1 {
   transition: transform 0.2s ease-in-out;
 }
 
-.caption-bank .draggable:not(.dragging):hover {
-  transform: scale(1.8);
-  z-index: 10;
-  background-color: #2a3b5c;
-  box-shadow: 0 0 10px #86dabd;
+@media (hover: hover) {
+  .caption-bank .draggable:not(.dragging):hover {
+    transform: scale(1.8);
+    z-index: 10;
+    background-color: #2a3b5c;
+    box-shadow: 0 0 10px #86dabd;
+  }
 }
 
 /* Image hover zoom */
@@ -219,11 +228,13 @@ h1 {
   transition: transform 0.2s ease-in-out;
 }
 
-.image-bank .draggable:not(.dragging):hover {
-  transform: scale(1.8);
-  z-index: 10;
-  background-color: #2a3b5c;
-  box-shadow: 0 0 10px #86dabd;
+@media (hover: hover) {
+  .image-bank .draggable:not(.dragging):hover {
+    transform: scale(1.8);
+    z-index: 10;
+    background-color: #2a3b5c;
+    box-shadow: 0 0 10px #86dabd;
+  }
 }
 
 /* Disable zoom while dragging */
